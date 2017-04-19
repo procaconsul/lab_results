@@ -4,9 +4,9 @@ Hello! Thanks for taking the time to do our technical test. We know these are an
 
 Please follow the instructions below and when you are done, put your code into a git repo you own and send us a link to it for us to assess. GitHub or BitBucket are both free for public repos.
 
-This test shouldn't take more than two or three hours, so if you are taking longer than that, it might be best to stop and discuss what you have managed to do with us.
-
 Feel free to use as much Google-Fu as you need to (that is what we do on a daily basis) - however, you need to do the test on your own. Any outside help is not in the spirit of the test and will result in seven or eight years of bad luck, depending on which is worst for you.
+
+**Impress us with your skills and show us what you can do! This is your chance to shine and the more we see the better.**
 
 # Pre-requesites
 
