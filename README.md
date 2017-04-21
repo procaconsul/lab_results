@@ -39,8 +39,8 @@ JSON output of the following format:**
                         "panel" : [
                             {
                                 "code": <string>     SNOMED code of test type
-                                "label": <string>    original code of test type
-                                "value": <double>    value only
+                                "label": <string>    description of the code from mapping file
+                                "value": <string>    value only
                                 "unit": <string>     unit string
                                 "lower": <double>    lower range bound
                                 "upper": <double>    upper range bound
@@ -102,6 +102,8 @@ Below is an example of a panel from `labresults.csv`:
 40681648,41860BONALP~55,09/08/2014,BONE PROFILE,BON,ALP~55,ALB~37,CA~2.18,xCCA~2.34,PHOS~1.29,,,,,,,,,,,,,,,,,,,,,xCCA,mmol/L,2.2,2.6
 40681648,41860BONALP~55,09/08/2014,BONE PROFILE,BON,ALP~55,ALB~37,CA~2.18,xCCA~2.34,PHOS~1.29,,,,,,,,,,,,,,,,,,,,,PHOS,mmol/L,0.87,1.45
 ```
+
+*Note:* the `sample id` is not unique, for example `41860BONALP~55` may be repeated several times, as the same specimen was used for repeated tests.
 
 This represents the following lab results:
 
