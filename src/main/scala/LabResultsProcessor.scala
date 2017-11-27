@@ -1,3 +1,4 @@
+import net.liftweb.json._
 
 object LabResultsProcessor {
 
@@ -14,17 +15,14 @@ object LabResultsProcessor {
   val LOWER = 32
   val UPPER = 33
   // =============================
+  // For lift-json operations
+  implicit val formats = DefaultFormats
 
   def generateProfCodeToValueMap(resCols: List[String]): Map[String, String] = {
     resCols.collect { case res if res != "" =>
       val values = res.split("~")
       (values(0), values(1))
     }.toMap
-  }
-
-  def processResultCodes(filePath: String): Map[String, (String, String)] = {
-    val bufferedSrc = io.Source.fromFile(filePath)
-    generateProfileToCodeDescriptionMap(bufferedSrc.getLines.toList)
   }
 
   // Assumes presence of header
@@ -36,7 +34,7 @@ object LabResultsProcessor {
   }
 
   // Assumes presence of header
-  def processLines(lines: List[String]): List[Record] = {
+  def assembleRecords(lines: List[String]): List[Record] = {
     lines.tail.map { line =>
       val cols = line.split(",").map(_.trim).toList
       val testName = cols(TEST_NAME)
@@ -48,19 +46,18 @@ object LabResultsProcessor {
     }
   }
 
-  // Main API function for LabResultsProcessor
-  def processResultsCSV(filePath: String): List[Record] = {
-    val bufferedSrc = io.Source.fromFile(filePath)
-    processLines(bufferedSrc.getLines.toList)
+  def processPatients(jsonPatients: String): List[Patient] = {
+    val json = parse(jsonPatients)
+    json.extract[List[Patient]]
   }
 
-  def assembleLabResults(records: List[Record], profileCodesTable: Map[String, (String, String)]): List[LabResult] = {
+  def assembleLabResults(records: List[Record], codesTable: Map[String, (String, String)]): List[LabResult] = {
     val bySampleId = records.groupBy(_.sampleId).toList
     bySampleId.map {
       case (sample, currRecords) => {
         val firstRecord = currRecords.head
-        val singleTestResults = assembleSingleTestResults(currRecords, profileCodesTable)
-        LabResult(firstRecord.date, firstRecord.profName, firstRecord.profCode, singleTestResults)
+        val singleTestResults = assembleSingleTestResults(currRecords, codesTable)
+        LabResult(firstRecord.date, Profile(firstRecord.profName, firstRecord.profCode), singleTestResults)
       }
     }
   }
@@ -72,4 +69,23 @@ object LabResultsProcessor {
       SingleTestResult(code, desc, record.value, record.unit, record.lower, record.upper)
     }
   }
+
+  def buildFormattedLabResults(records: List[Record],
+                          codesTable: Map[String, (String, String)],
+                          patients: List[Patient]): FormattedLabResults = {
+    val byHospId = records.groupBy(_.hospId)
+    val patientRecords = patients.map { patient =>
+      val relevantRecords = patient.identifiers.flatMap { ident => byHospId.getOrElse(ident, List()) }
+      val patientResults = assembleLabResults(relevantRecords, codesTable)
+      PatientRecord(patient.id, patient.firstName, patient.lastName, patient.dateOfBirth, patientResults)
+    }
+    FormattedLabResults(patientRecords)
+  }
+
+  def produceJSON(formattedResult: FormattedLabResults): String = {
+    import net.liftweb.json.Serialization.writePretty
+    writePretty(formattedResult)
+  }
 }
+
+
