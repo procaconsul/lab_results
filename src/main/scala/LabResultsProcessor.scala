@@ -20,7 +20,7 @@ object LabResultsProcessor {
   private val LOWER = 32
   private val UPPER = 33
   // =============================
-  val UNKNOWN_NUMERICAL_PLACEHOLDER = "-1.0"
+  private val UNKNOWN_NUMERICAL_PLACEHOLDER = "-1.0"
 
   // For lift-json operations
   implicit val formats = DefaultFormats
