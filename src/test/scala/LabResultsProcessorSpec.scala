@@ -1,10 +1,15 @@
 import org.scalatest.{FlatSpec, Matchers}
 
+/*
+ * Minimal test suite to assess functional correctness (base of TDD).
+ * No nasty edge cases are covered (like malformed values or inconsistent data),
+ * as the scope of this task is limited and it is possible to make assumptions about the shape of the data received.
+ */
 class LabResultsProcessorSpec extends FlatSpec with Matchers {
 
   "The Lab Results Processor" should "correctly create code-value map from results" in {
     val expected = Map("BILI" -> "1", "ALP" -> "2", "ALT" -> "3.0", "PHOS" -> "12")
-    val got      = LabResultsProcessor.generateProfCodeToValueMap(List("BILI~1", "ALP~2", "ALT~3.0", "PHOS~12"))
+    val got      = LabResultsProcessor.generateCodeValueMap(List("BILI~1", "ALP~2", "ALT~3.0", "PHOS~12"))
     got shouldEqual expected
   }
 
@@ -45,10 +50,10 @@ class LabResultsProcessorSpec extends FlatSpec with Matchers {
     val lines = List("key,code,description",
       "ALB,1751-7,\"Albumin, Serum\"",
       "ALP,6768-6,Alkaline phosphatase [Enzymatic activity/volume] in Serum or Plasma")
-    val expected = Map("ALB"->("1751-7", "\"Albumin, Serum\""),
+    val expected = Map("ALB"->("1751-7", "Albumin, Serum"),
       "ALP"->("6768-6","Alkaline phosphatase [Enzymatic activity/volume] in Serum or Plasma"))
 
-    val got = LabResultsProcessor.generateProfileToCodeDescriptionMap(lines)
+    val got = LabResultsProcessor.generateCodesTable(lines)
     got shouldEqual expected
   }
 
