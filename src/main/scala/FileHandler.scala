@@ -1,9 +1,9 @@
-import java.io.{File, PrintWriter}
+import java.io.{File, FileNotFoundException, PrintWriter}
 
 object FileHandler {
 
   def bufferSource(filePath: String): Iterator[String] = {
-    io.Source.fromFile(filePath).getLines
+      io.Source.fromFile(filePath).getLines
   }
 
   def dumpJSON(filePath: String, jsonContent: String): Unit = {
