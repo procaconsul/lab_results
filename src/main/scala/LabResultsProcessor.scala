@@ -20,6 +20,7 @@ object LabResultsProcessor {
   private val LOWER = 32
   private val UPPER = 33
   // =============================
+  val UNKNOWN_NUMERICAL_PLACEHOLDER = "-1.0"
 
   // For lift-json operations
   implicit val formats = DefaultFormats
@@ -73,15 +74,23 @@ object LabResultsProcessor {
 
   // UTILS ---------------------------------------------------------------------------------------
 
-  // Remove the \" value used to surround value
-  // involving commas in csv file
+  // Removing escape slashes from the entries
   private def cleanStringValue(sVal: String): String = {
     sVal.replaceAll("\"","")
   }
 
-  // Default value for missing lower/upper entries
+  // This is an arbitrary choice dictated by necessity of having
+  // a number for the lower and upper values.
+  // -1 is adopted as numerical placeholder.
   private def padNumerical(strNumber: String): String = {
-    "0" + strNumber
+    strNumber match {
+      case "" => UNKNOWN_NUMERICAL_PLACEHOLDER
+      case _  => strNumber
+    }
+  }
+
+  private def cleanOutput(res: String): String = {
+    res.replaceAll(UNKNOWN_NUMERICAL_PLACEHOLDER, "null")
   }
 
   // HELPERS --------------------------------------------------------------------------------------
@@ -107,7 +116,7 @@ object LabResultsProcessor {
 
   def produceJSON(formattedResult: FormattedLabResults): String = {
     import net.liftweb.json.Serialization.writePretty
-    writePretty(formattedResult)
+    cleanOutput(writePretty(formattedResult))
   }
 }
 
